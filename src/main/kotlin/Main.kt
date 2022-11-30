@@ -15,9 +15,9 @@ object Day4 {
         val cards = input
             .drop(1)// ignore the first row
             .map { it.trim() }
-            .map { line -> line.split("\\s+".toRegex()) }// split a line into 5 values
+            .map { it.split("\\s+".toRegex()) }// split a line into 5 values
             .filter { it.size == 5 } // skip empty lines
-            .map { listOfStrings -> listOfStrings.map { it.toInt() } } // strings to ints
+            .map { it.map { it.toInt() } } // strings to ints
             .withIndex()
             .groupBy { it.index / 5 } // integer division. first 5 is 0. second 5 is 1. third 5 is 2, etc
             .values // we don't need the key
