@@ -18,13 +18,13 @@ object Day4 {
         val cards = input
             .drop(1)// ignore the first row
             .map { it.trim() }
-            .map { it.split("\\s+".toRegex()) }// split string into list
+            .map { it.split("\\s+".toRegex()) } // split string into list
             .filter { it.size == 5 } // skip empty lines
             .map { it.map { it.toInt() } } // strings to ints
             .withIndex()
             .groupBy { it.index / 5 } // integer division. first 5 is 0. second 5 is 1. third 5 is 2, etc
             .values // we don't need the key
-            .map { it.map { it.value } } // unindex
+            .map { it.map { it.value } } // unwrap what withIndex did
             .map { BingoCard(it) }
 
         cards.forEach { println(it) }
