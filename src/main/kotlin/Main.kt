@@ -9,6 +9,47 @@ fun main(args: Array<String>) {
 
 object Day4 {
 
+    data class BingoCard(val numbers: List<List<Int>>) {
+        data class CardSquare(val number: Int) {
+            var marked = false
+        }
+
+        private val rows: List<List<CardSquare>> = numbers.map { row -> row.map { CardSquare(it) } }
+
+        private fun columns(): List<List<CardSquare>> {
+            return (rows.indices).map { colNum -> rows.map { row -> row[colNum] } }
+        }
+
+        fun call(number: Int): Int {
+            rows.forEach { row ->
+                row.forEach { square ->
+                    if (square.number == number)
+                        square.marked = true
+                }
+            }
+            return if (hasWon()) number * sumOfUnmarked() else -1
+        }
+
+        private fun hasWon(): Boolean {
+            var won = false
+            rows.forEach { row ->
+                if (row.all { it.marked })
+                    won = true
+            }
+            columns().forEach { col ->
+                if (col.all { it.marked })
+                    won = true
+            }
+            return won
+        }
+
+        private fun sumOfUnmarked(): Int {
+            var score: Int = 0
+            rows.forEach { it.forEach { if (!it.marked) score += it.number } }
+            return score
+        }
+    }
+
     fun part1() {
         val input: List<String> = Util.getResourceFileLines("day4.txt")
 
@@ -27,12 +68,19 @@ object Day4 {
             .map { it.map { it.value } } // unwrap what withIndex did
             .map { BingoCard(it) }
 
-        cards.forEach { println(it) }
-
-    }
-
-    data class BingoCard(val fiveByFiveMatrix: List<List<Int>>) {
-
+        // play bingo!
+        for (number in theNumbers.withIndex()) {
+            var someoneWon = false
+            println("Call round ${number.index}: ${number.value}")
+            cards.forEachIndexed { index, card ->
+                val score = card.call(number.value)
+                if (score > -1) {
+                    println("Card $index won. Score: $score")
+                    someoneWon = true
+                }
+            }
+            if (someoneWon) break
+        }
     }
 }
 
