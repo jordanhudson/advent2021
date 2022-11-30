@@ -4,6 +4,33 @@ fun main(args: Array<String>) {
     Day2.part2()
     Day3.part1()
     Day3.part2()
+    Day4.part1()
+}
+
+object Day4 {
+
+    fun part1() {
+        val input: List<String> = Util.getResourceFileLines("day4.txt")
+        val theNumbers = input[0].split(",").map { it.toInt() }
+        val cards = input
+            .drop(1)// ignore the first row
+            .map { it.trim() }
+            .map { line -> line.split("\\s+".toRegex()) }// split a line into 5 values
+            .filter { it.size == 5 } // skip empty lines
+            .map { listOfStrings -> listOfStrings.map { it.toInt() } } // strings to ints
+            .withIndex()
+            .groupBy { it.index / 5 } // integer division. first 5 is 0. second 5 is 1. third 5 is 2, etc
+            .values // we don't need the key
+            .map { it.map { it.value } } // unindex
+            .map { BingoCard(it) }
+
+        cards.forEach { println(it) }
+
+    }
+
+    data class BingoCard(val fiveByFiveMatrix: List<List<Int>>) {
+
+    }
 }
 
 object Day3 {
