@@ -11,11 +11,14 @@ object Day4 {
 
     fun part1() {
         val input: List<String> = Util.getResourceFileLines("day4.txt")
+
         val theNumbers = input[0].split(",").map { it.toInt() }
+
+        // raw text of bingo card as 5x5 matrix and then into a wrapper class
         val cards = input
             .drop(1)// ignore the first row
             .map { it.trim() }
-            .map { it.split("\\s+".toRegex()) }// split a line into 5 values
+            .map { it.split("\\s+".toRegex()) }// split string into list
             .filter { it.size == 5 } // skip empty lines
             .map { it.map { it.toInt() } } // strings to ints
             .withIndex()
