@@ -44,9 +44,9 @@ object Day4 {
         }
 
         private fun sumOfUnmarked(): Int {
-            var score: Int = 0
-            rows.forEach { it.forEach { if (!it.marked) score += it.number } }
-            return score
+            var unmarkedSum: Int = 0
+            rows.forEach { it.forEach { if (!it.marked) unmarkedSum += it.number } }
+            return unmarkedSum
         }
     }
 
