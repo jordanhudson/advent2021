@@ -1,11 +1,83 @@
+import java.util.ArrayDeque
+
 fun main(args: Array<String>) {
-    Day1.part2()
-    Day2.part1()
-    Day2.part2()
-    Day3.part1()
-    Day3.part2()
-    Day4.part1()
-    Day4.part2()
+//    Day1.part2()
+//    Day2.part1()
+//    Day2.part2()
+//    Day3.part1()
+//    Day3.part2()
+//    Day4.part1()
+//    Day4.part2()
+    Day5.part1()
+}
+
+object Day5 {
+
+    data class Point(val x: Int, val y: Int)
+
+    data class Line(val p1: Point, val p2: Point) {
+        fun isHorizontal(): Boolean =
+            p1.y == p2.y
+
+        fun isVertical(): Boolean =
+            p1.x == p2.x
+
+        fun allPoints(): List<Point> {
+            var points = listOf<Point>()
+            if (isVertical()) {
+                val (start, end) = if (p1.y < p2.y) Pair(p1, p2) else Pair(p2, p1)
+                points = ((start.y)..(end.y)).map { Point(start.x, it) }
+            } else if (isHorizontal()) {
+                val (start, end) = if (p1.x < p2.x) Pair(p1, p2) else Pair(p2, p1)
+                points = ((start.x)..(end.x)).map { Point(it, start.y) }
+            }
+            return points
+        }
+    }
+
+    data class Grid(val width: Int, val height: Int) {
+        private val cells: List<IntArray> = (0 until width).map { IntArray(height) }
+
+        fun draw(line: Line) {
+            line.allPoints().forEach {
+                cells[it.x][it.y]++
+            }
+        }
+
+        fun countCellsDrawnTwiceOrMore(): Int {
+            return cells.sumOf { it.count { it > 1 } }
+        }
+
+        fun repr(): String {
+            val builder = StringBuilder()
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    builder.append(cells[x][y])
+                }
+                builder.append("\n")
+            }
+            return builder.toString()
+        }
+    }
+
+    fun parse(rawLines: List<String>): List<Line> {
+        val regex = Regex("(\\d+),(\\d+) -> (\\d+),(\\d+)")
+        return rawLines.map {
+            val (x1, y1, x2, y2) = regex.find(it)!!.destructured
+            Line(Point(x1.toInt(), y1.toInt()), Point(x2.toInt(), y2.toInt()))
+        }
+    }
+
+    fun part1() {
+        val lines = parse(Util.getResourceFileLines("day5.txt"))
+        val grid = Grid(1000, 1000)
+        lines
+            .filter { it.isVertical() or it.isHorizontal() }
+            .forEach { grid.draw(it) }
+
+        println("cells drawn twice or more: ${grid.countCellsDrawnTwiceOrMore()}")
+        //println(grid.repr())  don't run this unless the dataset is small
+    }
 }
 
 object Day4 {
@@ -97,7 +169,7 @@ object Day4 {
         for (number in theNumbers.withIndex()) {
             println("Call round ${number.index}: ${number.value}")
             cards.forEachIndexed { index, card ->
-                if(!card.hasWon()) {
+                if (!card.hasWon()) {
                     val score = card.call(number.value)
                     if (score > -1) {
                         println("Card $index won. Score: $score")
