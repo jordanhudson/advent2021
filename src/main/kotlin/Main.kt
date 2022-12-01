@@ -5,6 +5,7 @@ fun main(args: Array<String>) {
     Day3.part1()
     Day3.part2()
     Day4.part1()
+    Day4.part2()
 }
 
 object Day4 {
@@ -30,7 +31,7 @@ object Day4 {
             return if (hasWon()) number * sumOfUnmarked() else -1
         }
 
-        private fun hasWon(): Boolean {
+        fun hasWon(): Boolean {
             var won = false
             rows.forEach { row ->
                 if (row.all { it.marked })
@@ -50,13 +51,11 @@ object Day4 {
         }
     }
 
-    fun part1() {
-        val input: List<String> = Util.getResourceFileLines("day4.txt")
+    fun buildNumbers(input: List<String>): List<Int> =
+        input[0].split(",").map { it.toInt() }
 
-        val theNumbers = input[0].split(",").map { it.toInt() }
-
-        // raw text of bingo card as 5x5 matrix and then into a wrapper class
-        val cards = input
+    fun buildCards(input: List<String>): List<BingoCard> =
+        input
             .drop(1)// ignore the first row
             .map { it.trim() }
             .map { it.split("\\s+".toRegex()) } // split string into list
@@ -68,9 +67,14 @@ object Day4 {
             .map { it.map { it.value } } // unwrap what withIndex did
             .map { BingoCard(it) }
 
+    fun part1() {
+        val input: List<String> = Util.getResourceFileLines("day4.txt")
+        val theNumbers: List<Int> = buildNumbers(input)
+        val cards = buildCards(input)
+
         // play bingo!
+        var someoneWon = false
         for (number in theNumbers.withIndex()) {
-            var someoneWon = false
             println("Call round ${number.index}: ${number.value}")
             cards.forEachIndexed { index, card ->
                 val score = card.call(number.value)
@@ -80,6 +84,31 @@ object Day4 {
                 }
             }
             if (someoneWon) break
+        }
+    }
+
+    fun part2() {
+        val input: List<String> = Util.getResourceFileLines("day4.txt")
+        val theNumbers: List<Int> = buildNumbers(input)
+        val cards = buildCards(input)
+
+        // play reverse bingo (find which card wins last)
+        println("Loser bingo")
+        for (number in theNumbers.withIndex()) {
+            println("Call round ${number.index}: ${number.value}")
+            cards.forEachIndexed { index, card ->
+                if(!card.hasWon()) {
+                    val score = card.call(number.value)
+                    if (score > -1) {
+                        println("Card $index won. Score: $score")
+                    }
+                }
+            }
+            // was it the last card to win?  (has everyone card now won?)
+            if (cards.all { it.hasWon() }) {
+                println("Every card is now a winner!")
+                break
+            }
         }
     }
 }
